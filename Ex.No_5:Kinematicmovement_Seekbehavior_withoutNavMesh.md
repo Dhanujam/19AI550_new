@@ -1,67 +1,116 @@
-# Ex.No: 5  Implementation of Kinematic movement -seek behavior in Unity
-### DATE: 19/03/2025                                                                         
+# Ex.No: 5  Implementation of Steering behaviour-Pursue and Evade in Unity
+### DATE: 21-04-2025                                                                           
 ### REGISTER NUMBER : 212224230057
 ### AIM: 
-To write a program to simulate the process of seek behavior in Unity without NavigationMeshAgent. 
+To write a program to simulate the process of Pursue and Evade behavior in Unity using NavigationMeshAgent. 
 ### Algorithm:
-1. Create a New Unity Project by Open the  Unity Hub and create a new 3D Project,Name the project (e.g., SeekBehaviorDemo).
-2. Create the Moving Object
-   In the Hierarchy, right-click → 3D Object → Cube (or Sphere).
-   Rename it to Seeker and Reset its position:Select the Seeker, go to Inspector → Transform → Set Position to (0,0,0).
-3. Create the Target Object
-   Right-click in the Hierarchy → 3D Object → Sphere (or any other shape).
-   Rename it to Target. Move it away from Seeker, e.g., set Position to (5, 0, 5).
-   Select the Target, add a Material, and change the color. (if needed) 
-4. Adding the Seek Behavior Script
-   Create the Script-In the Project Window, go to the Assets folder.
-   Right-click → Create → C# Script.
-5. Write a script for seek behavior and save it
-6. Attach the Script
-   Select Seeker in the Hierarchy - Drag & Drop the SeekBehavior script onto the Inspector Panel.
-   Drag & Drop the Target from the Hierarchy into the "Target" field in the script component.
-12. Run the game 
-13. Stop the program
-    
-### Program:
 ```
+1. Create a New Unity Project by Open the  Unity Hub and create a new 3D Project.
+2. Name the project "SteeringBehaviors" and select a location. Click Create.
+3.Open Unity Scene (default is SampleScene).
+  In the Hierarchy, create a Plane:
+  Right-click → 3D Object → Plane (this will be the ground).
+  Set its Scale to (10, 1, 10) for a larger surface.
+  Create three Capsule for the Player, Pursuer, and Evader:
+  Rename them to "Player", "Pursuer", and "Evader".
+  Set their Y Position to 0.5 (so they sit on the ground).
+  Change their Material for better distinction (optional).
+3. Add NavMesh and Bake
+   Window → AI → Navigation (opens the Navigation tab).
+   Select the Plane, go to the Navigation tab, and mark it as Navigation Static.
+   Go to the Bake tab and click Bake.
+   or
+   Add navMeshSurface to plane and bake 
+4. Add NavMeshAgent Component
+    Select Pursuer, and Evader.
+    Click Add Component → Search for NavMeshAgent and add it.
+    Adjust NavMeshAgent Settings:
+    Player: Set Speed = 5.
+    Pursuer: Set Speed = 4.
+    Evader: Set Speed = 6.
+5. Write a script for  Player_movement behavior and save it
+
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Script : MonoBehaviour
+public class Player_movement : MonoBehaviour
 {
     // Start is called before the first frame update
-    public Transform target;  // The object to seek
-    public float speed = 5f;  // Movement speed
+    public float speed;
     void Start()
     {
-        
+        float xdir = Input.GetAxis("horizontal") * speed;
+        float zdir = Input.GetAxis("vertical") * speed;
+        transform.position=new Vector3(xdir,zdir);
     }
 
     // Update is called once per frame
     void Update()
     {
-        if (target == null) return;  // Exit if no target is assigned
-
-        // Calculate the desired direction
-        Vector3 direction = (target.position - transform.position).normalized;
-
-        // Move the object towards the target
-        transform.position += direction * speed * Time.deltaTime;
+        
     }
 }
+**Evader script**
+public class Evader : MonoBehaviour
+{
+    // Start is called before the first frame update
+    public NavMeshAgent agent;
+    public Transform target;
+    public float evadespeed;
+    void Start()
+    {
+        agent= GetComponent<NavMeshAgent>();
+    }
+
+    void evade()
+    {
+        Vector3 fleedir = transform.position - target.position;
+        Vector3 evadeposition = transform.position + fleedir.normalized * evadespeed;
+        agent.SetDestination(evadeposition);
+
+    }
+    // Update is called once per frame
+    void Update()
+    {
+        evade();          
+     }
+}
+**Pursuer script**
+public class Pursuer: MonoBehaviour
+{
+    // Start is called before the first frame update
+    NavMeshAgent agent;
+    public Transform target;
+    public float speed;
+    void Start()
+    {
+        agent=this.GetComponent<NavMeshAgent>();
+    }
+       // Update is called once per frame
+    void pursue()
+    {
+       Vector3 targetvelocity=target.position-transform.position;
+       Vector3 futurepos = transform.position + targetvelocity.normalized*speed;
+       agent.SetDestination(target.position);
+    } 
+    // Update is called once per frame
+    void Update()
+    {
+        pursue();          
+     }
+}
+7. Attach the Script to each player,pursuer and Evader.
+   Drag & Drop the Target from the Hierarchy into the "Target" field in the script component ( For pursuer and Evader).
+12. Run the game 
+13. Stop the program
+    
 ```
 ### Output:
 
-![Screenshot 2025-03-19 154206](https://github.com/user-attachments/assets/71072aa1-9e61-4a30-b9dc-ae631584e4a4)
+![image](https://github.com/user-attachments/assets/594fc2bb-53e0-4bc3-911f-10e6aabd8319)
 
-
-![Screenshot 2025-03-19 161012](https://github.com/user-attachments/assets/2c2b9544-17c6-4611-8647-ac34fd6646c1)
-
-
-
-
-
+![image](https://github.com/user-attachments/assets/84ac4fda-67b4-4198-9b58-cd2a68b53b8f)
 
 ### Result:
-Thus the simple seek behavior was implemented successfully.
+Thus the simple pursue and evade behavior was implemented successfully.
