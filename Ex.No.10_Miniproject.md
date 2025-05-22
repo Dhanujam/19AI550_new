@@ -1,6 +1,6 @@
 # Ex.No: 10  Implementation of 2D Using A* Algorithm 
 ### DATE: 19-05-2025                                                                           
-### REGISTER NUMBER: 212223240010
+### REGISTER NUMBER: 212223240057
 
 ### AIM: 
 To develop "Maze Runner" game in Unity integrating A* algorithm and depth first search backtracking algorithm. 
